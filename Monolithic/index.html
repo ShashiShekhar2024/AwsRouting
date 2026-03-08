@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shashi Shekhar Demo code</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        header,
+        footer {
+            background-color: #4c7b78;
+            color: white;
+            text-align: left;
+            padding: 5px 30px;
+        }
+
+        .banner {
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            background-color: white;
+            padding: 25px;
+            width: 25%;
+            min-width: 250px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .section h2 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+
+        .section p {
+            color: #555;
+            font-size: 1em;
+        }
+
+        /* Highlight each section with unique colors */
+        .food {
+            border-top: 6px solid #ff6b6b;
+        }
+
+        .grocery {
+            border-top: 6px solid #51cf66;
+        }
+
+        .medicine {
+            border-top: 6px solid #339af0;
+        }
+/* Button styles */ 
+    .btn { 
+        display: inline-block; 
+        padding: 10px 20px; 
+        border-radius: 6px; 
+        text-decoration: none; 
+        font-weight: bold; 
+        color: white; 
+        transition: background-color 0.3s ease; 
+    } 
+    .btn-food { background-color: #ff6b6b; } 
+    .btn-food:hover { background-color: #e63946; } 
+    .btn-grocery { background-color: #51cf66; } 
+    .btn-grocery:hover { background-color: #2b8a3e; } 
+    .btn-medicine { background-color: #339af0; } 
+    .btn-medicine:hover { background-color: #1c7ed6; }
+        footer {
+            margin-top: 20px;
+        }
+    </style>
+</head>git 
+<body>
+    <header> 
+        <h1>My Service Platform</h1>
+    </header>
+
+    <div class="banner">
+        <svg width="100%" height="150px" xmlns="http://www.w3.org/2000/svg">
+            <!-- Gradient background -->
+            <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#4facfe; stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#00f2fe; stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect width="100%" height="150px" fill="url(#grad)" />
+            <!-- Decorative circles -->
+            <circle cx="80" cy="80" r="40" fill="rgba(255,255,255,0.3)" />
+            <circle cx="300" cy="150" r="60" fill="rgba(255,255,255,0.2)" />
+            <circle cx="600" cy="100" r="50" fill="rgba(255,255,255,0.25)" />
+            <!-- Banner text -->
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="32" fill="white" font-family="Arial, sans-serif">
+                Welcome to Our Services
+            </text>
+        </svg>
+    </div>
+    <div class="container">
+        <div class="section food">
+            <h2>🍔 Food Delivery </h2>
+            <p>Order delicious meals from your favorite restaurants delivered to your doorstep.</p>
+            <a href="#food" class="btn btn-food">Order Now</a>
+        </div>
+        <div
+            class="section grocery">
+            <h2>🛒 Grocery </h2>
+            <p>Shop fresh groceries online and get them delivered quickly and conveniently.</p>
+            <a href="#grocery" class="btn btn-grocery">Shop Now</a>
+        </div>
+        <div
+            class="section medicine">
+            <h2>💊  Medicine  </h2>
+            <p>Buy medicines and healthcare essentials with fast and reliable delivery.</p>
+            <a href="#medicine" class="btn btn-medicine">Buy Now</a>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2026 My Service Platform. All rights reserved.</p>
+    </footer>
+</body>
+</html>
