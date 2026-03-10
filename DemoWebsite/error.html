@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page Not Found | ShopWave</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+          --navy: #145c60;
+            --blue: #1a6ef5;
+            --electric: #00d4ff;
+            --orange: #ff6b1a;
+            --gold: #ffb800;
+            --light: #f0f4ff;
+            --white: #ffffff;
+            --gray: #8a93a8;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 24px rgba(26, 110, 245, 0.10);
+            --radius: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow: hidden;
+  }
+
+  /* ── STARFIELD CANVAS ── */
+  #stars {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── GRID OVERLAY ── */
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 1;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* ── AMBIENT GLOWS ── */
+  .glow-left {
+    position: fixed; left: -200px; top: 30%; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(26,110,245,0.18) 0%, transparent 70%);
+    pointer-events: none; z-index: 1;
+  }
+  .glow-right {
+    position: fixed; right: -150px; bottom: 10%; width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,107,26,0.12) 0%, transparent 70%);
+    pointer-events: none; z-index: 1;
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page {
+    position: relative; z-index: 2;
+    width: 100%; height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    gap: 0;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: linear-gradient(135deg, #318b93 0%, #0e6870 100%);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,212,255,0.08);
+    z-index: 10;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem;
+    color: var(--white); text-decoration: none; letter-spacing: -0.5px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo span { color: var(--electric); }
+  .logo svg { filter: drop-shadow(0 0 6px var(--electric)); }
+  .nav-back {
+    color: rgba(255,255,255,0.5); font-size: 0.85rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ── BIG 404 ── */
+  .big-404 {
+    position: relative;
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(140px, 22vw, 280px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -8px;
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(0,212,255,0.18);
+    user-select: none;
+    animation: fadeSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  /* Glowing filled text layered on top */
+  .big-404::after {
+    content: '404';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #1a6ef5 0%, #00d4ff 50%, #1a6ef5 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 0;
+    filter: blur(0px);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  /* ── FLOATING ASTRONAUT SVG ── */
+  .astronaut-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -54%);
+    animation: astronautFloat 6s ease-in-out infinite, fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+    z-index: 3;
+  }
+
+  /* ── CONTENT BLOCK ── */
+  .content {
+    text-align: center;
+    max-width: 520px;
+    margin-top: -12px;
+    animation: fadeSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+    opacity: 0;
+  }
+  .error-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,107,26,0.15); border: 1px solid rgba(255,107,26,0.3);
+    color: var(--orange); border-radius: 50px;
+    padding: 5px 16px; font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .error-tag::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); animation: pulse 1.4s infinite; }
+  .headline {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 14px;
+    color: var(--white);
+  }
+  .headline em { color: var(--electric); font-style: normal; }
+  .subtext {
+    color: rgba(255,255,255,0.5);
+    font-size: 1rem; line-height: 1.65;
+    margin-bottom: 36px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: linear-gradient(135deg, var(--blue), var(--electric));
+    color: var(--navy); padding: 14px 30px; border-radius: 50px;
+    font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer;
+    box-shadow: 0 4px 28px rgba(0,212,255,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(0,212,255,0.45); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8);
+    padding: 14px 30px; border-radius: 50px;
+    font-weight: 600; font-size: 0.95rem;
+    border: 1px solid rgba(255,255,255,0.12); cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { background: rgba(0,212,255,0.1); color: var(--electric); border-color: rgba(0,212,255,0.3); }
+
+  /* ── QUICK LINKS ── */
+  .quick-links {
+    margin-top: 40px;
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    animation: fadeSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.5s both;
+    opacity: 0;
+  }
+  .quick-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.55); font-size: 0.82rem; font-weight: 500;
+    padding: 7px 16px; border-radius: 50px; cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .quick-link:hover { background: rgba(0,212,255,0.08); color: var(--electric); border-color: rgba(0,212,255,0.2); }
+
+  /* ── SEARCH BAR ── */
+  .search-wrap {
+    margin-top: 28px;
+    display: flex; max-width: 420px; width: 100%; margin-left: auto; margin-right: auto;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px; overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    animation: fadeSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.4s both;
+    opacity: 0;
+  }
+  .search-wrap:focus-within {
+    border-color: rgba(0,212,255,0.4);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+  .search-wrap input {
+    flex: 1; background: none; border: none; outline: none;
+    padding: 12px 20px; color: white; font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .search-wrap input::placeholder { color: rgba(255,255,255,0.3); }
+  .search-wrap button {
+    background: rgba(0,212,255,0.15); border: none; cursor: pointer;
+    padding: 12px 20px; color: var(--electric); transition: background 0.2s;
+  }
+  .search-wrap button:hover { background: rgba(0,212,255,0.28); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes astronautFloat {
+    0%, 100% { transform: translate(-50%, -54%) rotate(-3deg); }
+    25%       { transform: translate(-50%, -58%) rotate(2deg); }
+    75%       { transform: translate(-50%, -50%) rotate(-1deg); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.7); }
+  }
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(var(--r)) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(var(--r)) rotate(-360deg); }
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+  }
+
+  /* ── ORBIT DOTS ── */
+  .orbit-container {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    pointer-events: none;
+  }
+  .orbit-dot {
+    position: absolute;
+    border-radius: 50%;
+    animation: orbit linear infinite;
+  }
+
+  /* ── BOTTOM HINT ── */
+  .bottom-hint {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.2); font-size: 0.75rem;
+    display: flex; align-items: center; gap: 8px;
+    z-index: 10;
+  }
+
+  @media (max-width: 600px) {
+    .topbar { padding: 14px 20px; }
+    .astronaut-wrap { transform: translate(-50%,-52%) scale(0.75); }
+    .big-404 { letter-spacing: -4px; }
+    .content { margin-top: -6px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="grid-overlay"></div>
+<div class="glow-left"></div>
+<div class="glow-right"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="shopwave.html" class="logo">
+    <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="14" r="13" stroke="#00d4ff" stroke-width="2"/>
+      <path d="M8 14 L14 8 L20 14 L14 20 Z" fill="#00d4ff"/>
+      <circle cx="14" cy="14" r="3" fill="#0f1b35"/>
+    </svg>
+    Shop<span>Wave</span>
+  </a>
+  <div class="nav-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    Error occurred at <span id="ts" style="color:rgba(255,255,255,0.7);margin-left:4px"></span>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div class="page">
+
+  <!-- Big 404 behind astronaut -->
+  <div class="big-404">404</div>
+
+  <!-- Floating Astronaut -->
+  <div class="astronaut-wrap">
+    <svg width="180" height="220" viewBox="0 0 180 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Jetpack -->
+      <rect x="62" y="110" width="56" height="70" rx="10" fill="#1a2a6a" stroke="#00d4ff" stroke-width="1.5"/>
+      <rect x="68" y="116" width="44" height="58" rx="7" fill="#0f1b35"/>
+      <!-- jetpack flames -->
+      <ellipse cx="80" cy="182" rx="8" ry="14" fill="url(#flame1)" opacity="0.85"/>
+      <ellipse cx="100" cy="182" rx="8" ry="14" fill="url(#flame2)" opacity="0.85"/>
+      <defs>
+        <radialGradient id="flame1" cx="50%" cy="0%" r="100%">
+          <stop offset="0%" stop-color="#00d4ff"/>
+          <stop offset="100%" stop-color="#1a6ef5" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="flame2" cx="50%" cy="0%" r="100%">
+          <stop offset="0%" stop-color="#00d4ff"/>
+          <stop offset="100%" stop-color="#ff6b1a" stop-opacity="0"/>
+        </radialGradient>
+        <!-- suit gradient -->
+        <linearGradient id="suit" x1="50" y1="80" x2="130" y2="180" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#e8f0fe"/>
+          <stop offset="1" stop-color="#b0c4f8"/>
+        </linearGradient>
+        <!-- helmet gradient -->
+        <radialGradient id="helm" cx="40%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#c5d8ff" stop-opacity="0.6"/>
+        </radialGradient>
+        <!-- visor -->
+        <linearGradient id="visor" x1="75" y1="32" x2="105" y2="62" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#00d4ff" stop-opacity="0.7"/>
+          <stop offset="1" stop-color="#1a6ef5" stop-opacity="0.5"/>
+        </linearGradient>
+      </defs>
+      <!-- Body suit -->
+      <rect x="52" y="98" width="76" height="82" rx="20" fill="url(#suit)" stroke="#b0c4f8" stroke-width="1"/>
+      <!-- Left arm -->
+      <rect x="28" y="102" width="26" height="48" rx="13" fill="url(#suit)" stroke="#b0c4f8" stroke-width="1"/>
+      <!-- Right arm -->
+      <rect x="126" y="102" width="26" height="48" rx="13" fill="url(#suit)" stroke="#b0c4f8" stroke-width="1"/>
+      <!-- Gloves -->
+      <ellipse cx="41" cy="152" rx="12" ry="9" fill="#1a6ef5"/>
+      <ellipse cx="139" cy="152" rx="12" ry="9" fill="#1a6ef5"/>
+      <!-- Legs -->
+      <rect x="60" y="170" width="24" height="42" rx="12" fill="url(#suit)" stroke="#b0c4f8" stroke-width="1"/>
+      <rect x="96" y="170" width="24" height="42" rx="12" fill="url(#suit)" stroke="#b0c4f8" stroke-width="1"/>
+      <!-- Boots -->
+      <rect x="54" y="202" width="36" height="16" rx="8" fill="#1a2a6a"/>
+      <rect x="90" y="202" width="36" height="16" rx="8" fill="#1a2a6a"/>
+      <!-- Helmet base -->
+      <circle cx="90" cy="52" r="42" fill="url(#helm)" stroke="#b0c4f8" stroke-width="1.5"/>
+      <!-- Visor -->
+      <path d="M65 40 Q90 28 115 40 Q118 52 115 64 Q90 76 65 64 Q62 52 65 40Z" fill="url(#visor)"/>
+      <!-- Visor shine -->
+      <path d="M72 36 Q82 32 92 35" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+      <!-- Helmet ring -->
+      <circle cx="90" cy="52" r="42" stroke="#00d4ff" stroke-width="1" fill="none" opacity="0.4"/>
+      <!-- Chest panel -->
+      <rect x="68" y="112" width="44" height="30" rx="8" fill="#1a2a6a" stroke="#00d4ff" stroke-width="1" opacity="0.7"/>
+      <circle cx="78" cy="125" r="4" fill="#00d4ff" opacity="0.9"/>
+      <circle cx="90" cy="125" r="4" fill="#ff6b1a" opacity="0.9"/>
+      <circle cx="102" cy="125" r="4" fill="#ffb800" opacity="0.9"/>
+      <rect x="74" y="134" width="32" height="4" rx="2" fill="#1a6ef5" opacity="0.5"/>
+      <!-- Antenna -->
+      <line x1="90" y1="10" x2="90" y2="0" stroke="#00d4ff" stroke-width="2"/>
+      <circle cx="90" cy="0" r="4" fill="#ff6b1a"/>
+      <!-- Small stars near helmet -->
+      <circle cx="140" cy="20" r="2.5" fill="white" opacity="0.7" style="animation:twinkle 2s infinite"/>
+      <circle cx="36" cy="30" r="2" fill="white" opacity="0.5" style="animation:twinkle 2.4s infinite 0.4s"/>
+      <circle cx="152" cy="50" r="1.5" fill="#00d4ff" opacity="0.7" style="animation:twinkle 1.8s infinite 0.8s"/>
+    </svg>
+  </div>
+
+  <!-- Orbit particles around astronaut -->
+  <div class="orbit-container" style="top:38%; left:50%">
+    <div class="orbit-dot" style="width:8px;height:8px;background:#00d4ff;--r:110px;animation-duration:8s;top:-4px;left:-4px;box-shadow:0 0 8px #00d4ff"></div>
+    <div class="orbit-dot" style="width:5px;height:5px;background:#ff6b1a;--r:140px;animation-duration:12s;top:-2.5px;left:-2.5px;animation-delay:-4s"></div>
+    <div class="orbit-dot" style="width:4px;height:4px;background:#ffb800;--r:90px;animation-duration:6s;top:-2px;left:-2px;animation-delay:-2s"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="error-tag">Page Not Found</div>
+    <h1 class="headline">Lost in <em>Space?</em><br>This page drifted away.</h1>
+    <p class="subtext">The page you're looking for has escaped into the cosmos. It might have been moved, deleted, or maybe it never existed in our universe.</p>
+
+    <div class="btn-group">
+      <a href="shopwave.html" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Back to Home
+      </a>
+      <a href="#" class="btn-secondary" onclick="history.back(); return false;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Go Back
+      </a>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <input type="text" placeholder="Search for products instead…" id="s404" onkeydown="if(event.key==='Enter')doSearch()"/>
+    <button onclick="doSearch()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
+  </div>
+
+  <!-- Quick links -->
+  <div class="quick-links">
+    <a href="shopwave.html" class="quick-link">📱 Mobiles</a>
+    <a href="shopwave.html" class="quick-link">📺 Televisions</a>
+    <a href="shopwave.html" class="quick-link">🧸 Toys</a>
+    <a href="shopwave.html" class="quick-link">🎧 Accessories</a>
+    <a href="shopwave.html" class="quick-link">🔥 Today's Deals</a>
+  </div>
+
+</div>
+
+<!-- Bottom hint -->
+<div class="bottom-hint">
+  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+  Error 404 · ShopWave v2.5
+</div>
+
+<script>
+// ── TIMESTAMP ──
+const ts = document.getElementById('ts');
+const now = new Date();
+ts.textContent = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+// ── STARFIELD ──
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let W, H, stars = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.6 + 0.2,
+      a: Math.random(),
+      da: (Math.random() - 0.5) * 0.008,
+      dx: (Math.random() - 0.5) * 0.15,
+      dy: (Math.random() - 0.5) * 0.08,
+      color: Math.random() > 0.85 ? '#00d4ff' : Math.random() > 0.7 ? '#b0c4f8' : 'white'
+    });
+  }
+}
+initStars();
+
+function drawStars() {
+  ctx.clearRect(0, 0, W, H);
+  for (const s of stars) {
+    s.a += s.da;
+    if (s.a <= 0 || s.a >= 1) s.da *= -1;
+    s.x += s.dx; s.y += s.dy;
+    if (s.x < 0) s.x = W; if (s.x > W) s.x = 0;
+    if (s.y < 0) s.y = H; if (s.y > H) s.y = 0;
+    ctx.save();
+    ctx.globalAlpha = s.a;
+    ctx.fillStyle = s.color;
+    ctx.shadowBlur = s.r > 1.2 ? 6 : 0;
+    ctx.shadowColor = s.color;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// ── MOUSE PARALLAX ──
+document.addEventListener('mousemove', e => {
+  const mx = (e.clientX / window.innerWidth - 0.5) * 30;
+  const my = (e.clientY / window.innerHeight - 0.5) * 20;
+  document.querySelector('.astronaut-wrap').style.transform =
+    `translate(calc(-50% + ${mx * 0.4}px), calc(-54% + ${my * 0.4}px)) rotate(${mx * 0.05}deg)`;
+  document.querySelector('.glow-left').style.transform = `translate(${mx * 0.2}px, ${my * 0.2}px)`;
+});
+
+// ── SEARCH ──
+function doSearch() {
+  const q = document.getElementById('s404').value.trim();
+  if (q) window.location.href = `shopwave.html?q=${encodeURIComponent(q)}`;
+}
+</script>
+</body>
+</html>
